@@ -6,12 +6,12 @@ export default function Home() {
   /* const themeToggle = useTheme();*/
   const [numbers, setNumbers] = useState<string>('0');
   const [number1, setNumber1] = useState<string>('0');
-  const [number2, setNumber2] = useState<string>('');
-  const [op, setOp] = useState<string>('');
+  const [number2, setNumber2] = useState<any>(null);
+  const [operacao, setOperacao] = useState<any>(null);
 
   function addNumber(number:any) {
     let result:any;
-    if (op == null){
+    if (operacao == null){
       result = Concatenar(number1, number);
       setNumber1(result);
     }else{
@@ -22,7 +22,20 @@ export default function Home() {
   }
 
   function Operation(op:any){
-    setNumbers(op);
+    //caso não exista
+    if (operacao === null) {
+      setOperacao(op);
+      return;
+    }
+    //realiza o calculo caso operaçao exista e o numero 2 esteja selecionado
+    //parseFloat pra converter em numero enquanto nao mudo o tipo
+    if(number2 !== null) {
+      const result = Calcular(parseFloat(number1), parseFloat(number2), operacao);
+      setOperacao(op);
+      setNumber1(result.toString());
+      setNumber2('');
+      setNumbers(result.toString());
+    }
   }
 
   function Concatenar(numAtual:any, numProx:any){
@@ -65,12 +78,27 @@ export default function Home() {
     return result ;
   }
 
+    function AcaoCalcular() {
+      if (number2 == null) {
+        return;
+      }
+      const result = Calcular(parseFloat(number1), parseFloat(number2), operacao);
+      setNumbers(result);
+    }
+
+    function Limpar() {
+      setNumbers('0');
+      setNumber1('0');
+      setNumber2(null);
+      setOperacao(null);
+    }
+
   return (
     <div className="box">
     { /*<Button onClick={() => themeToggle.toggle()}>Toggle Theme</Button> */}  
     <div className="container">
       <div className="rowFirst">
-      <button>C</button>
+      <button onClick={Limpar}>C</button>
       <Input 
       type="text" 
       name="numbers"
@@ -88,13 +116,13 @@ export default function Home() {
           <ButtonCalc onClick={() => addNumber(8)}>8</ButtonCalc>
           <ButtonCalc onClick={() => addNumber(5)}>5</ButtonCalc>
           <ButtonCalc onClick={() => addNumber(2)}>2</ButtonCalc>
-          <ButtonCalc>.</ButtonCalc>
+          <ButtonCalc onClick={() => addNumber('.')}>.</ButtonCalc>
         </div>
         <div className="column">
           <ButtonCalc onClick={() => addNumber(9)}>9</ButtonCalc>
           <ButtonCalc onClick={() => addNumber(6)}>6</ButtonCalc>
           <ButtonCalc onClick={() => addNumber(3)}>3</ButtonCalc>
-          <ButtonEven>=</ButtonEven>
+          <ButtonEven onClick={AcaoCalcular}>=</ButtonEven>
         </div>
         <div className="column">
           <ButtonOperator onClick={() => Operation('/')}>/</ButtonOperator>
